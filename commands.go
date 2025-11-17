@@ -33,21 +33,26 @@ func commandHelp(cfg *Config) error {
 	return nil
 }
 
+// call back for commanding map to go forward
 func commandMapf(cfg *Config) error {
+	// Gets locations either through cache or API call based on configs next URL
 	locationsResp, err := cfg.pokeapiClient.ListLocations(cfg.nextLocationsURL)
 	if err != nil {
 		return err
 	}
 
+	// Updates URLs of the configs based on JSON response
 	cfg.nextLocationsURL = locationsResp.Next
 	cfg.prevLocationsURL = locationsResp.Previous
 
+	// Prints out the locations
 	for _, loc := range locationsResp.Results {
 		fmt.Println(loc.Name)
 	}
 	return nil
 }
 
+// callback for moving map backwards, same as commandmapf
 func commandMapb(cfg *Config) error {
 	if cfg.prevLocationsURL == nil {
 		return errors.New("you're on the first page")
