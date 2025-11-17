@@ -45,6 +45,11 @@ func startRepl(cfg *Config) {
 			description: "Display locations but goes backward",
 			callback:    commandMapb,
 		},
+		"explore": {
+			name:        "explore",
+			description: "Explores a specific location in pokemon",
+			callback:    commandExplore,
+		},
 	}
 
 	// Infinite for loop scanning for user input and doing something with it
@@ -54,20 +59,23 @@ func startRepl(cfg *Config) {
 		scanner.Scan()
 
 		// cleans user input
-		command := scanner.Text()
-		command = strings.ToLower(command)
-		command = strings.TrimSpace(command)
+		text := scanner.Text()
+		output := strings.ToLower(text)
+		commandWords := strings.Fields(output)
 
 		// perform command based on the registry of available commands
-		switch command {
+		switch commandWords[0] {
 		case "exit":
-			registry["exit"].callback(cfg)
+			registry["exit"].callback(cfg, "")
 		case "help":
-			registry["help"].callback(cfg)
+			registry["help"].callback(cfg, "")
 		case "map":
-			registry["map"].callback(cfg)
+			registry["map"].callback(cfg, "")
 		case "mapb":
-			registry["mapb"].callback(cfg)
+			registry["mapb"].callback(cfg, "")
+		case "explore":
+			location := commandWords[1]
+			registry["explore"].callback(cfg, location)
 		default:
 			fmt.Println("Unknown command")
 		}

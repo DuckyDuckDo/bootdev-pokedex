@@ -10,20 +10,20 @@ import (
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(cfg *Config) error
+	callback    func(cfg *Config, location string) error
 }
 
 // ALL CLI COMMANDS REPL CAN CALL
 
 // callback for the exit command
-func commandExit(cfg *Config) error {
+func commandExit(cfg *Config, location string) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 	return nil
 }
 
 // call back for the help command
-func commandHelp(cfg *Config) error {
+func commandHelp(cfg *Config, location string) error {
 	fmt.Println("Welcome to the Pokedex!")
 	fmt.Println("Usage:")
 	// Loops through registry and prints out possible commands for use
@@ -34,7 +34,7 @@ func commandHelp(cfg *Config) error {
 }
 
 // call back for commanding map to go forward
-func commandMapf(cfg *Config) error {
+func commandMapf(cfg *Config, location string) error {
 	// Gets locations either through cache or API call based on configs next URL
 	locationsResp, err := cfg.pokeapiClient.ListLocations(cfg.nextLocationsURL)
 	if err != nil {
@@ -53,7 +53,7 @@ func commandMapf(cfg *Config) error {
 }
 
 // callback for moving map backwards, same as commandmapf
-func commandMapb(cfg *Config) error {
+func commandMapb(cfg *Config, location string) error {
 	if cfg.prevLocationsURL == nil {
 		return errors.New("you're on the first page")
 	}
@@ -68,6 +68,21 @@ func commandMapb(cfg *Config) error {
 
 	for _, loc := range locationResp.Results {
 		fmt.Println(loc.Name)
+	}
+	return nil
+}
+
+// call back for exploring a specific location
+func commandExplore(cfg *Config, location string) error {
+	exploreResp, err := cfg.pokeapiClient.ExploreLocation(location)
+	if err != nil {
+		fmt.Println("Location Not Found")
+		return err
+	}
+
+	// Parses the JSON response and returns all found pokemon
+	for _, encounter := range exploreResp.PokemonEncounters {
+		fmt.Println(encounter.Pokemon.Name)
 	}
 	return nil
 }
