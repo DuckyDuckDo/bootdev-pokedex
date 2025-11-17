@@ -1,9 +1,11 @@
 package main
+
 import (
 	"bufio"
 	"fmt"
 	"os"
 	"strings"
+
 	"github.com/DuckyDuckDo/bootdev-pokedex/internal/pokeapi"
 )
 
@@ -13,12 +15,12 @@ var registry map[string]cliCommand
 // establish the struct for Config
 type Config struct {
 	pokeapiClient    pokeapi.Client
-	nextLocationsURL     *string
+	nextLocationsURL *string
 	prevLocationsURL *string
 }
 
-func startRepl(cfg *Config){
-		// Initialize a scanner for the REPL
+func startRepl(cfg *Config) {
+	// Initialize a scanner for the REPL
 	scanner := bufio.NewScanner(os.Stdin)
 
 	// Initialize registry of possible REPL commands
