@@ -16,18 +16,19 @@ type cacheEntry struct {
 	val       []byte
 }
 
+// Defines a new cache type/initialization
 func NewCache(interval time.Duration) *Cache {
-	// Creates a new cache
 	c := &Cache{
 		entries:  make(map[string]cacheEntry),
 		interval: interval,
 	}
+	// initialize go routine for cleanup of the cache
 	go c.reapLoop()
 	return c
 }
 
+// Cache method to write to cache
 func (c *Cache) Add(key string, val []byte) {
-	// Adds new item to cache
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	entry := cacheEntry{
@@ -36,8 +37,9 @@ func (c *Cache) Add(key string, val []byte) {
 	}
 	c.entries[key] = entry
 }
+
+// Cache method for Read
 func (c *Cache) Get(key string) ([]byte, bool) {
-	// Receives data from the cache
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
@@ -50,9 +52,11 @@ func (c *Cache) Get(key string) ([]byte, bool) {
 
 // Reap loop function cleans the cache if data is in cache for too long
 func (c *Cache) reapLoop() {
+	// Ticker with interval from cache
 	ticker := time.NewTicker(c.interval)
 	defer ticker.Stop()
 
+	// Upon every interval of time, we clear the items in cache if they persist too long
 	for range ticker.C {
 		now := time.Now()
 		c.mu.Lock()

@@ -15,7 +15,7 @@ func (c *Client) ListLocations(pageURL *string) (RespShallowLocations, error) {
 	}
 
 	// Try hitting the cache first
-	if data, ok := c.pokedexCache.Get(url); ok {
+	if data, ok := c.pokeapiCache.Get(url); ok {
 		var locationsResp RespShallowLocations
 		err := json.Unmarshal(data, &locationsResp)
 		if err != nil {
@@ -38,7 +38,7 @@ func (c *Client) ListLocations(pageURL *string) (RespShallowLocations, error) {
 
 	// Cache and unmarshal the response
 	dat, err := io.ReadAll(resp.Body)
-	c.pokedexCache.Add(url, dat)
+	c.pokeapiCache.Add(url, dat)
 
 	if err != nil {
 		return RespShallowLocations{}, err

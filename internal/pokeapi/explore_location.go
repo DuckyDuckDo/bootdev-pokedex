@@ -12,7 +12,7 @@ func (c *Client) ExploreLocation(location string) (RespExploration, error) {
 	url := exploreURL + "/" + location
 
 	// Try hitting the cache first
-	if data, ok := c.pokedexCache.Get(url); ok {
+	if data, ok := c.pokeapiCache.Get(url); ok {
 		var exploreResp RespExploration
 		err := json.Unmarshal(data, &exploreResp)
 		if err != nil {
@@ -35,7 +35,11 @@ func (c *Client) ExploreLocation(location string) (RespExploration, error) {
 
 	// Cache and unmarshal the response into JSON Data
 	dat, err := io.ReadAll(resp.Body)
-	c.pokedexCache.Add(url, dat)
+	c.pokeapiCache.Add(url, dat)
+
+	if err != nil {
+		return RespExploration{}, err
+	}
 
 	var exploreResp RespExploration
 	err = json.Unmarshal(dat, &exploreResp)

@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/DuckyDuckDo/bootdev-pokedex/internal/pokeapi"
+	"github.com/DuckyDuckDo/bootdev-pokedex/internal/pokedex"
 )
 
 // declaring global variable registry to map commands to cliCommand interface
@@ -15,6 +16,7 @@ var registry map[string]cliCommand
 // establish the struct for Config
 type Config struct {
 	pokeapiClient    pokeapi.Client
+	pokedex      *pokedex.Pokedex // key is the name of pokemon, value is the data of pokemon
 	nextLocationsURL *string
 	prevLocationsURL *string
 }
@@ -50,6 +52,11 @@ func startRepl(cfg *Config) {
 			description: "Explores a specific location in pokemon",
 			callback:    commandExplore,
 		},
+		"catch": {
+			name:        "catch",
+			description: "Tries to catch a pokemon",
+			callback:    commandCatch,
+		},
 	}
 
 	// Infinite for loop scanning for user input and doing something with it
@@ -76,6 +83,9 @@ func startRepl(cfg *Config) {
 		case "explore":
 			location := commandWords[1]
 			registry["explore"].callback(cfg, location)
+		case "catch":
+			pokemon := commandWords[1]
+			registry["catch"].callback(cfg, pokemon)
 		default:
 			fmt.Println("Unknown command")
 		}
